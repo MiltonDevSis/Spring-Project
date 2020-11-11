@@ -1,4 +1,4 @@
-package entities;
+package com.miltondev.course.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
