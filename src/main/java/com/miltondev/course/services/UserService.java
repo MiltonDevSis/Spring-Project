@@ -5,9 +5,12 @@ import java.util.Optional;
 
 import com.miltondev.course.entities.User;
 import com.miltondev.course.repositories.UserRepository;
+import com.miltondev.course.services.exceptions.DatabaseException;
 import com.miltondev.course.services.exceptions.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,9 +32,15 @@ public class UserService {
         return repository.save(obj);
     }
 
-    public void delete(Long id){
-        repository.deleteById(id);
-    }
+    public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+	}
 
     public User update(Long id, User obj){
         User entity = repository.getOne(id);
